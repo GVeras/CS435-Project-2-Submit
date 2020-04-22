@@ -57,10 +57,11 @@ def createRandomGridGraph(n: int) -> GridGraph:
 def astar(sourceNode: GridNode, destNode: GridNode) -> list:
     distance=0
     priorityQueue=[]
+    path=[sourceNode.val]
     heapq.heapify(priorityQueue)
+
     finalized=set()
     finalized.add(sourceNode)
-    currNode=sourceNode
     
     nodes=dict()
     nodes[sourceNode.val]=sourceNode
@@ -68,12 +69,14 @@ def astar(sourceNode: GridNode, destNode: GridNode) -> list:
     heuristic=abs(sourceNode.x-destNode.x)+abs(sourceNode.y-destNode.y)
     heapq.heappush(priorityQueue,(heuristic,distance,sourceNode.val))
 
+    currNode=sourceNode
     while currNode!=destNode:
         neighbors=currNode.neighbors-finalized
         if neighbors==set():
             if currNode==sourceNode:
                 return float('inf')
             finalized.add(currNode)
+            path.remove(currNode.val)
         else:
             for neighbor in neighbors:
                     heuristic=abs(neighbor.x-destNode.x)+abs(neighbor.y-destNode.y)
@@ -83,23 +86,20 @@ def astar(sourceNode: GridNode, destNode: GridNode) -> list:
         
         heuristic,distance,currNodeVal=heapq.heappop(priorityQueue)
         currNode=nodes[currNodeVal]
-    return distance
+        path.append(currNode.val)
+    return path
 
 randGraph=createRandomGridGraph(100)
 sourceNode=randGraph.nodes[0]
 destNode=randGraph.nodes[-1]
 print("101x101 graph result:",astar(sourceNode,destNode))
 
-result={}
-
-for i in range(150):
-    randGraph=createRandomGridGraph(15)
+for i in range(12):
+    randGraph=createRandomGridGraph(6)
     sourceNode=randGraph.nodes[0]
     destNode=randGraph.nodes[-1]
     answer=astar(sourceNode,destNode)
-    result[answer]=result.get(answer,0)+1
+    print(answer)
 
-print("\n150 Results in a 16x16 graph (result: frequency):")
-print(result)
 
-print("If you want to see more results, increase the probability of connected nodes!")
+print("\nIf you want to see more results, increase the probability of connected nodes!")
